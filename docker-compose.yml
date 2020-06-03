@@ -1,0 +1,52 @@
+version: "3"
+
+networks:
+  frontend:
+  backend:
+
+services:
+  # Builds server image and runs as container: cmpt304_server
+  www:
+    # Builds image using Dockerfile in ./web directory
+    build: ./www
+
+    networks:
+      - frontend
+      - backend
+
+    ports:
+      # 8080 is an alternative port for http to run the web server
+      - "8080:80"
+
+    depends_on:
+      # Web server is connected to the database container
+      - db
+    volumes:
+      - ./src:/var/www/html/
+
+    # Server container is named
+    container_name: lab1_www
+
+  db:
+    # Builds database image and runs as container: cmpt304_db
+    build: ./db
+
+    networks:
+      - backend
+
+    # Port for MySQL Database System
+    ports:
+      - "3306:3306"
+
+    # Environment variables to assess the database
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+      - MYSQL_USER=cmpt310
+      - MYSQL_PASSWORD=w2qa=m
+      - MYSQL_DATABASE=Lab1
+
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+
+    # Database container is named
+    container_name: lab1_db
